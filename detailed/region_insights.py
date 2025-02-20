@@ -1,5 +1,4 @@
 import pandas as pd
-import pandas as pd
 import dash
 import dash_bootstrap_components as dbc
 from dash import html
@@ -9,19 +8,8 @@ import plotly.express as px
 df_comp = pd.read_csv("cleaned_data/cleaned_companies.csv")
 df_di = pd.read_csv("cleaned_data/cleaned_dealInvestor.csv")
 df_deals = pd.read_csv("cleaned_data/cleaned_deals.csv") 
-df_invs = pd.read_csv("cleaned_data/cleaned_deals.csv")
+df_invs = pd.read_csv("cleaned_data/cleaned_investor.csv")
 df_eco = pd.read_csv("cleaned_data/cleaned_ecosystem.csv")   
-
-# print(df_comp.info())
-# print(df_comp.describe())
-# print(df_di.info())
-# print(df_di.describe())
-# print(df_deals.info())
-# print(df_deals.describe())
-# print(df_invs.info())
-# print(df_invs.describe())
-# print(df_eco.info())
-# print(df_eco.describe())
 
 # START OF EDA
 
@@ -74,7 +62,6 @@ def clean_cat(cat):
 
 # make categories clean for all the relevant dfs
 df_deals['primaryTag'] = df_deals['primaryTag'].apply(clean_cat)
-df_invs['primaryTag'] = df_invs['primaryTag'].apply(clean_cat)
 df_comp['primaryTag'] = df_comp['primaryTag'].apply(clean_cat)
 
 # identify all possible ecosystems
@@ -86,7 +73,6 @@ def clean_eco(eco):
   else:
     return eco
 df_deals['ecosystemName'] = df_deals['ecosystemName'].apply(clean_eco)
-df_invs['ecosystemName'] = df_invs['ecosystemName'].apply(clean_eco)
 df_comp['ecosystemName'] = df_comp['ecosystemName'].apply(clean_eco)
 df_di['ecosystemName'] = df_di['ecosystemName'].apply(clean_eco)
 
@@ -146,7 +132,6 @@ def clean_hq(hq):
 
 # make headquarters clean for all the relevant dfs
 df_deals['headquarters'] = df_deals['headquarters'].apply(clean_hq)
-df_invs['headquarters'] = df_invs['headquarters'].apply(clean_hq)
 df_di['headquarters'] = df_di['headquarters'].apply(clean_hq)
 
 uni_hq = df_deals['headquarters'].unique()
@@ -163,17 +148,10 @@ hq_loc = {
     'edmonton': [53.5461, -113.4937],
     'winnipeg': [49.8954, -97.1385],
 }
-# hq_loc2 = {
-#     'toronto': [43.6511, -79.3470], # for benchmarking dot size
-#     'vancouver': [49.2827, -123.1207],
-#     'calgary': [51.0447, -114.0719],
-#     'edmonton': [53.5461, -113.4937],
-#     'winnipeg': [49.8954, -97.1385],
-# }
+
+
 df_loc = pd.DataFrame(hq_loc).T.reset_index()
 df_loc.columns = ['headquarters', 'lat', 'lon']
-# df_loc2 = pd.DataFrame(hq_loc2).T.reset_index()
-# df_loc2.columns = ['headquarters', 'lat', 'lon']
 
 # grabs a subset of deals with relevant headquarters, finds its total investment vol and top inv categories
 hq_trends = df_deals.groupby(['headquarters', 'primaryTag'])['amount'].sum().reset_index()
@@ -212,33 +190,7 @@ map_e.update_layout(
     mapbox_center={"lat": 56, "lon": -106}, 
 )
 
-# repeat for other locations
-# hq_trends = top4_df.merge(df_loc2, on='headquarters', how='left')
-# hq_trends = hq_trends.dropna(subset=['lat', 'lon'])
-# num_deals = df_deals.groupby('headquarters').size().reset_index(name='num_deals') # counts number of deals for each hq
-# hq_trends = hq_trends.merge(num_deals, on='headquarters', how='left')
-# hq_trends.loc[hq_trends['headquarters'] == hq, 'lat'] = 51.0447
-# hq_trends = hq_trends.sort_values(by="amount", ascending=False)
 
-# map_w = px.scatter_map(
-#     hq_trends,
-#     lat='lat',
-#     lon='lon',
-#     size='amount',  # bubble size represents investment volume
-#     color="primaryTag", # color represents top category
-#     hover_name='headquarters',
-#     hover_data={'primaryTag': True, "amount": True, 'num_deals': True, "lat": False, "lon":False},
-#     labels={'amount':'Total Investment Volume', 'primaryTag':'Top Investment Categories',
-#             'num_deals': 'Total Number of Deals'},
-#     title='Investment Trends by Major Headquarter Locations (Western Regions)',
-#     color_discrete_sequence=px.colors.qualitative.Prism,
-#     size_max=60, 
-#     zoom=3.8
-# )
-# map_w.update_layout(
-#     mapbox_style='carto-positron',
-#     mapbox_center={"lat": 51, "lon": -111}, 
-# )
 
 # Putting everything into a dashboard
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -289,5 +241,3 @@ app.layout = html.Div([
 if __name__ == '__main__':
     print("App is starting")
     app.run_server(debug=True)
-
-
