@@ -16,9 +16,3 @@ Additionally, a **prediction model** powered by **Scikit-Learn** forecasts futur
 - **Dash & Plotly** (For interactive data visualization)  
 - **Scikit-Learn** (For machine learning-based predictions)  
 - **Pandas & NumPy** (For data processing and analysis)  
-
-## Installation  
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/YourUsername/Investment-Analysis-System.git
-   cd Investment-Analysis-System
